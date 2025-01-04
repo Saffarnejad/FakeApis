@@ -13,5 +13,18 @@ namespace FakeApis.Helpers
                 Name = category.Name
             };
         }
+
+        public static ProductDto ToDto(this Product product)
+        {
+            return new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                ImageUrl = product.ImageUrl,
+                CategoryName = product.Category.Name
+            };
+        }
     }
 }
