@@ -52,8 +52,8 @@ namespace FakeApis.Repositories
                 productInDb.Name = product.Name;
                 productInDb.Description = product.Description;
                 productInDb.Price = product.Price;
-                productInDb.ImageUrl = product.ImageUrl;
                 productInDb.CategoryId = product.CategoryId;
+                productInDb.Images = product.Images;
                 _db.Products.Update(productInDb);
                 await _db.SaveChangesAsync();
             }
