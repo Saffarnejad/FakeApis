@@ -22,8 +22,8 @@ namespace FakeApis.Helpers
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                ImageUrl = product.ImageUrl,
-                CategoryName = product.Category.Name
+                CategoryName = product.Category.Name,
+                Images = product.Images.Select(image => image.Url).ToList()
             };
         }
     }
