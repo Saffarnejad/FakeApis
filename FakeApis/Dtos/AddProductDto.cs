@@ -14,9 +14,9 @@ namespace FakeApis.Dtos
         public decimal Price { get; set; }
 
         [Required]
-        public string ImageUrl { get; set; }
+        public int CategoryId { get; set; }
 
         [Required]
-        public int CategoryId { get; set; }
+        public List<IFormFile> Images { get; set; }
     }
 }
