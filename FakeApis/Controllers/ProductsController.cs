@@ -122,7 +122,7 @@ namespace FakeApis.Controllers
         }
 
         [HttpDelete("{id}")]
-        private async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var product = await _productRepository.GetAsync(id);
             if (product is null)
