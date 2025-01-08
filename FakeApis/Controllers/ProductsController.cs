@@ -12,11 +12,13 @@ namespace FakeApis.Controllers
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductsController(ICategoryRepository categoryRepository, IProductRepository productRepository)
+        public ProductsController(ICategoryRepository categoryRepository, IProductRepository productRepository, IWebHostEnvironment webHostEnvironment)
         {
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
