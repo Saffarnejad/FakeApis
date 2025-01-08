@@ -132,5 +132,35 @@ namespace FakeApis.Controllers
 
             return NoContent();
         }
+
+        private async Task<List<Image>> UploadImages(int productId, List<IFormFile> images)
+        {
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var productImages = new List<Image>();
+
+            foreach (var image in images)
+            {
+                var imagePath = Path.Combine(uploadsFolder, image.FileName);
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                var productImage = new Image
+                {
+                    Url = $"/uploads/{image.FileName}",
+                    ProductId = productId
+                };
+
+                productImages.Add(productImage);
+            }
+
+            return productImages;
+        }
     }
 }
