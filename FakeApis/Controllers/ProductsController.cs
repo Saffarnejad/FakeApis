@@ -49,16 +49,23 @@ namespace FakeApis.Controllers
                 return BadRequest("Invalid CategoryId.");
             }
 
+            if (productDto.Images is null || productDto.Images.Count == 0)
+            {
+                return BadRequest("No images uploaded.");
+            }
+
             var product = new Product
             {
                 Name = productDto.Name,
                 Description = productDto.Description,
                 Price = productDto.Price,
-                ImageUrl = productDto.ImageUrl,
                 CategoryId = productDto.CategoryId
             };
-
             await _productRepository.AddAsync(product);
+
+            product.Images = await UploadImages(product.Id, productDto.Images);
+
+            await _productRepository.UpdateAsync(product);
 
             return CreatedAtAction(nameof(Get), new { id = product.Id }, product.ToDto());
         }
@@ -78,8 +85,8 @@ namespace FakeApis.Controllers
             {
                 if (string.IsNullOrWhiteSpace(productDto.Name) &&
                     string.IsNullOrWhiteSpace(productDto.Description) &&
-                    string.IsNullOrWhiteSpace(productDto.ImageUrl) &&
-                    productDto.Price.HasValue)
+                    productDto.Price.HasValue &&
+                    (productDto.Images is null || productDto.Images.Count == 0))
                 {
                     return BadRequest("Enter at least one of the fields.");
                 }
@@ -106,14 +113,14 @@ namespace FakeApis.Controllers
                 product.Price = productDto.Price.Value;
             }
 
-            if (!string.IsNullOrWhiteSpace(productDto.ImageUrl))
-            {
-                product.ImageUrl = productDto.ImageUrl;
-            }
-
             if (productDto.CategoryId.HasValue)
             {
                 product.CategoryId = productDto.CategoryId.Value;
+            }
+
+            if (productDto.Images != null && productDto.Images.Count != 0)
+            {
+                product.Images = await UploadImages(product.Id, productDto.Images);
             }
 
             await _productRepository.UpdateAsync(product);
