@@ -10,12 +10,14 @@ namespace FakeApis.Controllers
     [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
+        private readonly ILogger<ProductsController> _logger;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductRepository _productRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductsController(ICategoryRepository categoryRepository, IProductRepository productRepository, IWebHostEnvironment webHostEnvironment)
+        public ProductsController(ILogger<ProductsController> logger, ICategoryRepository categoryRepository, IProductRepository productRepository, IWebHostEnvironment webHostEnvironment)
         {
+            _logger = logger;
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
             _webHostEnvironment = webHostEnvironment;
@@ -24,6 +26,7 @@ namespace FakeApis.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+            _logger.LogInformation("Getting all products.");
             var products = await _productRepository.GetAllAsync();
             return Ok(products.Select(product => product.ToDto()));
         }
