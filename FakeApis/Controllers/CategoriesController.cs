@@ -65,7 +65,7 @@ namespace FakeApis.Controllers
         }
 
         [HttpDelete("{id}")]
-        private async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var category = await _categoryRepository.GetAsync(id);
             if (category is null)
