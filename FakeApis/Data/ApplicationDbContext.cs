@@ -17,6 +17,7 @@ namespace FakeApis.Data
             base.OnModelCreating(builder);
 
             new CategoryConfiguration().Configure(builder.Entity<Category>());
+            new ProductConfiguration().Configure(builder.Entity<Product>());
         }
     }
 }
