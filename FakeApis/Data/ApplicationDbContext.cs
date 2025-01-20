@@ -18,6 +18,7 @@ namespace FakeApis.Data
 
             new CategoryConfiguration().Configure(builder.Entity<Category>());
             new ProductConfiguration().Configure(builder.Entity<Product>());
+            new ImageConfiguration().Configure(builder.Entity<Image>());
         }
     }
 }
