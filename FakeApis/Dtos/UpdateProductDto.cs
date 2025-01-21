@@ -7,7 +7,9 @@ namespace FakeApis.Dtos
         [Required]
         public int Id { get; set; }
 
+        [StringLength(50)]
         public string? Name { get; set; }
+
         public string? Description { get; set; }
         public decimal? Price { get; set; }
         public int? CategoryId { get; set; }

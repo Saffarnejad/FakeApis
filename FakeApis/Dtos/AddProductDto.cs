@@ -5,6 +5,7 @@ namespace FakeApis.Dtos
     public class AddProductDto
     {
         [Required]
+        [StringLength(50)]
         public string Name { get; set; }
 
         [Required]
