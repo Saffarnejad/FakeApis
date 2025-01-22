@@ -31,17 +31,18 @@ namespace FakeApis.Repositories
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return await _db.Products.ToListAsync();
+            return await _db.Products
+                .Include(p => p.Category)
+                .Include(p => p.Images)
+                .ToListAsync();
         }
 
         public async Task<Product?> GetAsync(int id)
         {
-            var productInDb = await _db.Products.FirstOrDefaultAsync(p => p.Id == id);
-            if (productInDb != null)
-            {
-                return productInDb;
-            }
-            return new Product();
+            return await _db.Products
+                .Include(p => p.Category)
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task UpdateAsync(Product product)
