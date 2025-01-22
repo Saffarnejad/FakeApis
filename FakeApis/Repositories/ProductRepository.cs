@@ -34,7 +34,7 @@ namespace FakeApis.Repositories
             return await _db.Products.ToListAsync();
         }
 
-        public async Task<Product> GetAsync(int id)
+        public async Task<Product?> GetAsync(int id)
         {
             var productInDb = await _db.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (productInDb != null)
