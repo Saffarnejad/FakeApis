@@ -34,14 +34,9 @@ namespace FakeApis.Repositories
             return await _db.Categories.ToListAsync();
         }
 
-        public async Task<Category> GetAsync(int id)
+        public async Task<Category?> GetAsync(int id)
         {
-            var categoryInDb = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
-            if (categoryInDb != null)
-            {
-                return categoryInDb;
-            }
-            return new Category();
+            return await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task UpdateAsync(Category category)
