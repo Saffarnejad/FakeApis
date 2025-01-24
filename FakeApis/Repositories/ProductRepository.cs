@@ -26,6 +26,7 @@ namespace FakeApis.Repositories
             if (productInDb != null)
             {
                 _db.Products.Remove(productInDb);
+                await _db.SaveChangesAsync();
             }
         }
 
