@@ -140,6 +140,7 @@ namespace FakeApis.Controllers
                 return NotFound();
             }
 
+            DeleteImages(product);
             await _productRepository.DeleteAsync(id);
 
             return NoContent();
@@ -173,6 +174,14 @@ namespace FakeApis.Controllers
             }
 
             return productImages;
+        }
+
+        private static void DeleteImages(Product product)
+        {
+            foreach (var image in product.Images)
+            {
+                ImageHelper.DeleteImage(image.Name);
+            }
         }
     }
 }
