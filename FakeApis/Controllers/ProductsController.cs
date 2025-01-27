@@ -14,13 +14,15 @@ namespace FakeApis.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductRepository _productRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly string _host;
 
-        public ProductsController(ILogger<ProductsController> logger, ICategoryRepository categoryRepository, IProductRepository productRepository, IWebHostEnvironment webHostEnvironment)
+        public ProductsController(ILogger<ProductsController> logger, ICategoryRepository categoryRepository, IProductRepository productRepository, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
             _webHostEnvironment = webHostEnvironment;
+            _host = $"{httpContextAccessor.HttpContext.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host.Value}";
         }
 
         [HttpGet]
@@ -28,7 +30,7 @@ namespace FakeApis.Controllers
         {
             _logger.LogInformation("Getting all products.");
             var products = await _productRepository.GetAllAsync();
-            return Ok(products.Select(product => product.ToDto()));
+            return Ok(products.Select(product => product.ToDto(_host)));
         }
 
         [HttpGet("{id}")]
@@ -40,7 +42,7 @@ namespace FakeApis.Controllers
                 return NotFound();
             }
 
-            return Ok(product.ToDto());
+            return Ok(product.ToDto(_host));
         }
 
         [HttpPost]
@@ -69,8 +71,7 @@ namespace FakeApis.Controllers
             product.Images = await UploadImages(product.Id, productDto.Images);
 
             await _productRepository.UpdateAsync(product);
-
-            return CreatedAtAction(nameof(Get), new { id = product.Id }, product.ToDto());
+            return CreatedAtAction(nameof(Get), new { id = product.Id }, product.ToDto(_host));
         }
 
         [HttpPut]
@@ -148,12 +149,6 @@ namespace FakeApis.Controllers
 
         private static async Task<List<Image>> UploadImages(int productId, List<IFormFile> images)
         {
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
             var productImages = new List<Image>();
 
             foreach (var image in images)
