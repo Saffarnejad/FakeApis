@@ -2,7 +2,7 @@
 {
     public static class ImageHelper
     {
-        private static readonly string _defaultImageFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+        private static readonly string _defaultImageFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads");
 
         static ImageHelper()
         {
