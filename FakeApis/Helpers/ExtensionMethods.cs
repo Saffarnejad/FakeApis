@@ -14,7 +14,7 @@ namespace FakeApis.Helpers
             };
         }
 
-        public static ProductDto ToDto(this Product product)
+        public static ProductDto ToDto(this Product product, string host)
         {
             return new ProductDto
             {
@@ -23,7 +23,7 @@ namespace FakeApis.Helpers
                 Description = product.Description,
                 Price = product.Price,
                 CategoryName = product.Category.Name,
-                Images = product.Images.Select(image => image.Url).ToList()
+                Images = product.Images.Select(image => $"{host}/uploads/{image.Name}").ToList()
             };
         }
     }
