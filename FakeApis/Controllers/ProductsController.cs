@@ -146,7 +146,7 @@ namespace FakeApis.Controllers
             return NoContent();
         }
 
-        private async Task<List<Image>> UploadImages(int productId, List<IFormFile> images)
+        private static async Task<List<Image>> UploadImages(int productId, List<IFormFile> images)
         {
             var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
             if (!Directory.Exists(uploadsFolder))
@@ -158,15 +158,11 @@ namespace FakeApis.Controllers
 
             foreach (var image in images)
             {
-                var imagePath = Path.Combine(uploadsFolder, image.FileName);
-                using (var stream = new FileStream(imagePath, FileMode.Create))
-                {
-                    await image.CopyToAsync(stream);
-                }
+                var imagePath = await ImageHelper.UploadImageAsync(image.OpenReadStream(), image.FileName);
 
                 var productImage = new Image
                 {
-                    Url = $"/uploads/{image.FileName}",
+                    Name = image.FileName,
                     ProductId = productId
                 };
 
