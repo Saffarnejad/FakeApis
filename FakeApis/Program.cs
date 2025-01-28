@@ -1,4 +1,5 @@
 using FakeApis.Data;
+using FakeApis.Helpers;
 using FakeApis.Repositories;
 using FakeApis.Repositories.Contracts;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +30,8 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddXmlDataContractSerializerFormatters();
+UrlHelper.Configure(new HttpContextAccessor());
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
