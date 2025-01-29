@@ -3,6 +3,7 @@ using FakeApis.Helpers;
 using FakeApis.Models;
 using FakeApis.Repositories.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace FakeApis.Controllers
 {
@@ -14,15 +15,13 @@ namespace FakeApis.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductRepository _productRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly string _host;
 
-        public ProductsController(ILogger<ProductsController> logger, ICategoryRepository categoryRepository, IProductRepository productRepository, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
+        public ProductsController(ILogger<ProductsController> logger, ICategoryRepository categoryRepository, IProductRepository productRepository, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
             _webHostEnvironment = webHostEnvironment;
-            _host = $"{httpContextAccessor.HttpContext.Request.Scheme}://{httpContextAccessor.HttpContext.Request.Host.Value}";
         }
 
         [HttpGet]
@@ -30,7 +29,7 @@ namespace FakeApis.Controllers
         {
             _logger.LogInformation("Getting all products.");
             var products = await _productRepository.GetAllAsync();
-            return Ok(products.Select(product => product.ToDto(_host)));
+            return Ok(products.Select(product => product.ToDto()));
         }
 
         [HttpGet("{id}")]
@@ -42,7 +41,7 @@ namespace FakeApis.Controllers
                 return NotFound();
             }
 
-            return Ok(product.ToDto(_host));
+            return Ok(product.ToDto());
         }
 
         [HttpPost]
@@ -71,7 +70,7 @@ namespace FakeApis.Controllers
             product.Images = await UploadImages(product.Id, productDto.Images);
 
             await _productRepository.UpdateAsync(product);
-            return CreatedAtAction(nameof(Get), new { id = product.Id }, product.ToDto(_host));
+            return CreatedAtAction(nameof(Get), new { id = product.Id }, product.ToDto());
         }
 
         [HttpPut]
@@ -153,11 +152,13 @@ namespace FakeApis.Controllers
 
             foreach (var image in images)
             {
-                var imagePath = await ImageHelper.UploadImageAsync(image.OpenReadStream(), image.FileName);
+                var uniqueFileName = Guid.NewGuid().ToString("N") + Path.GetExtension(image.FileName);
+
+                await ImageHelper.UploadImageAsync(image.OpenReadStream(), uniqueFileName);
 
                 var productImage = new Image
                 {
-                    Name = image.FileName,
+                    Name = uniqueFileName,
                     ProductId = productId
                 };
 
