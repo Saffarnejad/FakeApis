@@ -14,8 +14,9 @@ namespace FakeApis.Helpers
             };
         }
 
-        public static ProductDto ToDto(this Product product, string host)
+        public static ProductDto ToDto(this Product product)
         {
+            var baseUrl = UrlHelper.GetBaseUrl();
             return new ProductDto
             {
                 Id = product.Id,
@@ -23,7 +24,7 @@ namespace FakeApis.Helpers
                 Description = product.Description,
                 Price = product.Price,
                 CategoryName = product.Category.Name,
-                Images = product.Images.Select(image => $"{host}/uploads/{image.Name}").ToList()
+                Images = product.Images.Select(image => $"{baseUrl}/uploads/{image.Name}").ToList()
             };
         }
     }
