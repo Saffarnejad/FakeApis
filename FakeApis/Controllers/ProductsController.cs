@@ -3,7 +3,6 @@ using FakeApis.Helpers;
 using FakeApis.Models;
 using FakeApis.Repositories.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace FakeApis.Controllers
 {
