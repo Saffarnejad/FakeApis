@@ -8,18 +8,18 @@ namespace FakeApis.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Image> builder)
         {
-            builder.Property(image => image.Url).HasMaxLength(2048);
+            builder.Property(image => image.Name).HasMaxLength(50);
 
             var images = new List<Image>
             {
-                new() { Id = 1, Url = "https://m.media-amazon.com/images/I/81gP22+jCVL._AC_SX679_.jpg", ProductId = 1 },
-                new() { Id = 2, Url = "https://m.media-amazon.com/images/I/81FiOrqdYtL._AC_SX679_.jpg", ProductId = 1 },
-                new() { Id = 3, Url = "https://m.media-amazon.com/images/I/611+ApROVpL._AC_SX342_SY445_.jpg", ProductId = 2 },
-                new() { Id = 4, Url = "https://m.media-amazon.com/images/I/71YxVwUVevL._AC_SY550_.jpg", ProductId = 3 },
-                new() { Id = 5, Url = "https://m.media-amazon.com/images/I/81sIVuoPJYL._AC_SY550_.jpg", ProductId = 3 },
-                new() { Id = 6, Url = "https://m.media-amazon.com/images/I/81gjPXnTs8L._AC_SY550_.jpg", ProductId = 3 },
-                new() { Id = 7, Url = "https://m.media-amazon.com/images/I/81rCVMMNsiL._SX679_.jpg", ProductId = 4 },
-                new() { Id = 8, Url = "https://m.media-amazon.com/images/I/81nUwEwQlqL._SX679_.jpg", ProductId = 4 },
+                new() { Id = 1, Name = "image1.jpg", ProductId = 1 },
+                new() { Id = 2, Name = "image2.jpg", ProductId = 1 },
+                new() { Id = 3, Name = "image3.jpg", ProductId = 2 },
+                new() { Id = 4, Name = "image4.jpg", ProductId = 3 },
+                new() { Id = 5, Name = "image5.jpg", ProductId = 3 },
+                new() { Id = 6, Name = "image6.jpg", ProductId = 3 },
+                new() { Id = 7, Name = "image7.jpg", ProductId = 4 },
+                new() { Id = 8, Name = "image8.jpg", ProductId = 4 },
             };
 
             builder.HasData(images);
