@@ -2,12 +2,14 @@
 using FakeApis.Helpers;
 using FakeApis.Models;
 using FakeApis.Repositories.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FakeApis.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;
