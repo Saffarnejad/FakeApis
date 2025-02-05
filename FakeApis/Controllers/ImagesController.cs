@@ -1,10 +1,12 @@
 ﻿using FakeApis.Repositories.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FakeApis.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ImagesController : ControllerBase
     {
         private readonly IImageRepository _imageRepository;
