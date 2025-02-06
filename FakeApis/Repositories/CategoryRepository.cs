@@ -20,28 +20,28 @@ namespace FakeApis.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, string userId)
         {
-            var categoryInDb = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            var categoryInDb = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
             if (categoryInDb != null)
             {
                 _db.Categories.Remove(categoryInDb);
             }
         }
 
-        public async Task<IEnumerable<Category>> GetAllAsync()
+        public async Task<IEnumerable<Category>> GetAllAsync(string userId)
         {
-            return await _db.Categories.ToListAsync();
+            return await _db.Categories.Where(c => c.UserId == userId || c.UserId == null).ToListAsync();
         }
 
-        public async Task<Category?> GetAsync(int id)
+        public async Task<Category?> GetAsync(int id, string userId)
         {
-            return await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            return await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && (c.UserId == userId || c.UserId == null));
         }
 
-        public async Task UpdateAsync(Category category)
+        public async Task UpdateAsync(Category category, string userId)
         {
-            var categoryInDb = await _db.Categories.FirstOrDefaultAsync(c => c.Id == category.Id);
+            var categoryInDb = await _db.Categories.FirstOrDefaultAsync(c => c.Id == category.Id && c.UserId == userId);
             if (categoryInDb != null)
             {
                 categoryInDb.Name = category.Name;
