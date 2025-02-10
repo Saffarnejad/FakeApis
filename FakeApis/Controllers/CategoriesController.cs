@@ -14,11 +14,13 @@ namespace FakeApis.Controllers
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly string? _userId;
+        //private readonly string? _userName;
 
         public CategoriesController(ICategoryRepository categoryRepository, IHttpContextAccessor httpContextAccessor)
         {
             _categoryRepository = categoryRepository;
             _userId = httpContextAccessor.HttpContext.Items.FirstOrDefault(item => item.Key == "UserId").Value?.ToString();
+            //_userName = httpContextAccessor.HttpContext.Items.FirstOrDefault(c => c.Key == "UserName").Value?.ToString();
         }
 
         [HttpGet]
