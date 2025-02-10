@@ -1,5 +1,6 @@
 using FakeApis.Data;
 using FakeApis.Helpers;
+using FakeApis.Middlewares;
 using FakeApis.Repositories;
 using FakeApis.Repositories.Contracts;
 using Microsoft.AspNetCore.Identity;
@@ -84,6 +85,9 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
+app.UseMiddleware<HeaderMiddleware>();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
