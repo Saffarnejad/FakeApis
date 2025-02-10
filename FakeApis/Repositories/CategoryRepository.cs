@@ -20,13 +20,16 @@ namespace FakeApis.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id, string userId)
+        public async Task<bool> DeleteAsync(int id, string userId)
         {
             var categoryInDb = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
             if (categoryInDb != null)
             {
                 _db.Categories.Remove(categoryInDb);
+                await _db.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
         public async Task<IEnumerable<Category>> GetAllAsync(string userId)
@@ -39,7 +42,7 @@ namespace FakeApis.Repositories
             return await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && (c.UserId == userId || c.UserId == null));
         }
 
-        public async Task UpdateAsync(Category category, string userId)
+        public async Task<bool> UpdateAsync(Category category, string userId)
         {
             var categoryInDb = await _db.Categories.FirstOrDefaultAsync(c => c.Id == category.Id && c.UserId == userId);
             if (categoryInDb != null)
@@ -47,7 +50,9 @@ namespace FakeApis.Repositories
                 categoryInDb.Name = category.Name;
                 _db.Categories.Update(categoryInDb);
                 await _db.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
     }
 }
