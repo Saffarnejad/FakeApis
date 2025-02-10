@@ -13,23 +13,25 @@ namespace FakeApis.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly string? _userId;
 
-        public CategoriesController(ICategoryRepository categoryRepository)
+        public CategoriesController(ICategoryRepository categoryRepository, IHttpContextAccessor httpContextAccessor)
         {
             _categoryRepository = categoryRepository;
+            _userId = httpContextAccessor.HttpContext.Items.FirstOrDefault(item => item.Key == "UserId").Value?.ToString();
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            var categories = await _categoryRepository.GetAllAsync(_userId);
             return Ok(categories.Select(category => category.ToDto()));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var category = await _categoryRepository.GetAsync(id);
+            var category = await _categoryRepository.GetAsync(id, _userId);
             if (category is null)
             {
                 return NotFound();
@@ -43,7 +45,8 @@ namespace FakeApis.Controllers
         {
             var category = new Category
             {
-                Name = categoryDto.Name
+                Name = categoryDto.Name,
+                UserId = _userId
             };
 
             await _categoryRepository.AddAsync(category);
@@ -54,30 +57,26 @@ namespace FakeApis.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateCategoryDto categoryDto)
         {
-            var category = await _categoryRepository.GetAsync(categoryDto.Id);
+            var category = await _categoryRepository.GetAsync(categoryDto.Id, _userId);
             if (category is null)
             {
                 return NotFound();
             }
 
             category.Name = categoryDto.Name;
-            await _categoryRepository.UpdateAsync(category);
-
-            return NoContent();
+            return await _categoryRepository.UpdateAsync(category, _userId) ? NoContent() : Forbid();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _categoryRepository.GetAsync(id);
+            var category = await _categoryRepository.GetAsync(id, _userId);
             if (category is null)
             {
                 return NotFound();
             }
 
-            await _categoryRepository.DeleteAsync(id);
-
-            return NoContent();
+            return await _categoryRepository.DeleteAsync(id, _userId) ? NoContent() : Forbid();
         }
     }
 }
