@@ -4,6 +4,7 @@ namespace FakeApis.Services.Contracts
 {
     public interface ITokenService
     {
-        string GenerateToken(IdentityUser user);
+        string GenerateRefreshToken();
+        Task<string> GenerateToken(IdentityUser user);
     }
 }
