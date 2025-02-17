@@ -1,43 +1,79 @@
 ﻿using FakeApis.Services.Contracts;
+using FakeApis.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace FakeApis.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _configuration;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SymmetricSecurityKey _key;
+        private readonly string? _issuer;
+        private readonly string? _audience;
+        private readonly double _expires;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
-            _configuration = configuration;
+            _userManager = userManager;
+            var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>();
+            if (jwtSettings is null || string.IsNullOrEmpty(jwtSettings.Key))
+            {
+                throw new InvalidOperationException("JWT security key is not configured.");
+            }
+
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key));
+            _issuer = jwtSettings.Issuer;
+            _audience = jwtSettings.Audience;
+            _expires = jwtSettings.ExpirationInMinutes;
         }
 
-        public string GenerateToken(IdentityUser user)
+        public async Task<string> GenerateToken(IdentityUser user)
+        {
+            var signingCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
+            var claims = await GetClaimsAsync(user);
+            var jwtSecurityToken = GenerateTokenOptions(claims, signingCredentials);
+            return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+        }
+
+        private async Task<List<Claim>> GetClaimsAsync(IdentityUser user)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpirationInMinutes"]));
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
-            var token = new JwtSecurityToken(
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
+            return claims;
+        }
+
+        private JwtSecurityToken GenerateTokenOptions(List<Claim> claims, SigningCredentials signingCredentials)
+        {
+            return new JwtSecurityToken(
+                _issuer,
+                _audience,
                 claims,
-                expires: expires,
+                expires: DateTime.Now.AddMinutes(_expires),
                 signingCredentials: signingCredentials
             );
+        }
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+        public string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var randomNumberGenerator = RandomNumberGenerator.Create();
+            randomNumberGenerator.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }
