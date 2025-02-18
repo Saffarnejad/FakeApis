@@ -23,7 +23,7 @@ namespace FakeApis.Middlewares
                 {
                     var userId = jwtToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
                     context.Items.Add("UserId", userId);
-                    var userName = jwtToken.Claims.First(claim => claim.Type == "sub").Value;
+                    var userName = jwtToken.Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
                     context.Items.Add("UserName", userName);
                 }
             }
