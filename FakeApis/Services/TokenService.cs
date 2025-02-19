@@ -42,19 +42,25 @@ namespace FakeApis.Services
 
         private async Task<List<Claim>> GetClaimsAsync(IdentityUser user)
         {
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var roleClaims = new List<Claim>();
+            foreach (var role in userRoles)
+            {
+                roleClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
-
-            var roles = await _userManager.GetRolesAsync(user);
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email)
             }
-
-            return claims;
+            .Union(userClaims)
+            .Union(roleClaims);
+            
+            return claims.ToList();
         }
 
         private JwtSecurityToken GenerateTokenOptions(List<Claim> claims, SigningCredentials signingCredentials)
